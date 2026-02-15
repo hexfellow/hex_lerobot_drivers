@@ -1,0 +1,37 @@
+<mujocoinclude>
+    <contact>
+        <exclude body1="base_link" body2="link_1" />
+        <exclude body1="link_1" body2="link_2" />
+        <exclude body1="link_2" body2="link_3" />
+        <exclude body1="link_3" body2="link_4" />
+        <exclude body1="link_4" body2="link_5" />
+        <exclude body1="link_5" body2="gripper_base_link" />
+        <exclude body1="gripper_base_link" body2="gripper_left_helper_link" />
+        <exclude body1="gripper_left_helper_link" body2="gripper_left_link_1" />
+        <exclude body1="gripper_left_helper_link" body2="gripper_left_link_2" />
+        <exclude body1="gripper_left_link_1" body2="gripper_left_link_2" />
+        <exclude body1="gripper_base_link" body2="gripper_right_helper_link" />
+        <exclude body1="gripper_right_helper_link" body2="gripper_right_link_1" />
+        <exclude body1="gripper_right_helper_link" body2="gripper_right_link_2" />
+        <exclude body1="gripper_right_link_1" body2="gripper_right_link_2" />
+    </contact>
+
+    <equality>
+        <joint joint1="gripper_left_joint_1" joint2="gripper_left_joint_2" />
+        <joint joint1="gripper_left_joint_1" joint2="gripper_left_help_joint" />
+        <joint joint1="gripper_left_joint_1" joint2="gripper_right_joint_1" />
+        <joint joint1="gripper_left_joint_1" joint2="gripper_right_joint_2" />
+        <joint joint1="gripper_left_joint_1" joint2="gripper_right_help_joint" />
+    </equality>
+
+    <actuator>
+        <motor joint="joint_1" ctrlrange="-28 28" forcerange="-28 28"/>
+        <motor joint="joint_2" ctrlrange="-28 28" forcerange="-28 28"/>
+        <motor joint="joint_3" ctrlrange="-28 28" forcerange="-28 28"/>
+        <motor joint="joint_4" ctrlrange="-28 28" forcerange="-28 28"/>
+        <motor joint="joint_5" ctrlrange="-8 8" forcerange="-8 8"/>
+        <motor joint="joint_6" ctrlrange="-8 8" forcerange="-8 8"/>
+        <motor joint="gripper_left_joint_1" ctrlrange="-8 8" forcerange="-8 8"/>
+    </actuator>
+
+</mujocoinclude>

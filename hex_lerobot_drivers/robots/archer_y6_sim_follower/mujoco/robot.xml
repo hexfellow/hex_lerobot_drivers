@@ -1,0 +1,100 @@
+<mujocoinclude>
+    <body name="base_link">
+        <inertial pos="-0.001 0 0.031" quat="0 0.707107 0 0.707107" mass="0.748" diaginertia="0.0008 0.0007 0.0006"/>
+        <geom type="mesh" rgba="1 1 1 1" mesh="arm_base_link"/>
+
+        # link 1
+        <body name="link_1" pos="0 0 0.06655">
+            <inertial pos="0.006 -0.0013 0.0209" quat="0.707107 0.707107 0 0" mass="0.2289" diaginertia="0.0004 0.0004 0.0002"/>
+            <joint name="joint_1" class="j1_class" pos="0 0 0" axis="0 0 1" range="-2.91 2.91" limited="true"/>
+            <geom type="mesh" rgba="0.92549 0.92549 0.92549 1" mesh="arm_link_1"/>
+
+            # link 2
+            <body name="link_2" pos="0.02 0 0.045">
+                <inertial pos="0.0001 -0.0013 0.1301" quat="0.999997 -0.00253798 0 0" mass="1.5141" diaginertia="0.021 0.0208005 0.00109949"/>
+                <joint name="joint_2" class="j2_class" pos="0 0 0" axis="0 1 0" range="-1.57 2.09" limited="true"/>
+                <geom type="mesh" rgba="1 1 1 1" mesh="arm_link_2"/>
+
+                # link 3
+                <body name="link_3" pos="0 0 0.264">
+                    <inertial pos="-0.054 -0.0015 0.1603" quat="0.998349 0 -0.0574445 0" mass="1.2023" diaginertia="0.011127 0.0106 0.00147299"/>
+                    <joint name="joint_3" class="j3_class" pos="0 0 0" axis="0 1 0" range="0 3.14" limited="true"/>
+                    <geom type="mesh" rgba="1 1 1 1" mesh="arm_link_3"/>
+
+                    # link 4
+                    <body name="link_4" pos="-0.06 0 0.245">
+                        <inertial pos="-0.058 -0.002 0.0558" quat="0 0.92388 0 0.382683" mass="0.6233" diaginertia="0.0015 0.0012 0.0007"/>
+                        <joint name="joint_4" class="j4_class" pos="0 0 0" axis="0 1 0" range="-1.57 1.57" limited="true"/>
+                        <geom type="mesh" rgba="0.792157 0.792157 0.792157 1" mesh="arm_link_4"/>
+
+                        # link 5
+                        <body name="link_5" pos="-0.0553 0 0.0702">
+                            <inertial pos="0.0512 0 0.0026" quat="0.5 0.5 0.5 0.5" mass="0.4173" diaginertia="0.0003 0.0003 0.0002"/>
+                            <joint name="joint_5" class="j5_class" pos="0 0 0" axis="-1 0 0" range="-1.57 1.57" limited="true"/>
+                            <geom type="mesh" rgba="0.898039 0.917647 0.929412 1" mesh="arm_link_5"/>
+
+                            # link 6
+                            <body name="link_6" pos="0.0552 0 0.02895">
+                                <inertial pos="-0.0139 0.0001 0.0578" quat="0.567843 0.421372 0.421372 0.567843" mass="0.7751" diaginertia="0.0021 0.00143028 0.00106972"/>
+                                <joint name="joint_6" class="j6_class" pos="0 0 0" axis="0 0 1" range="-2.96 2.96" limited="true"/>
+
+                                <body name="gripper_base_link" pos="0.0 0.0 0.0" quat="0.707107 0 -0.707107 0 ">
+                                    <inertial pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" mass="0.0" diaginertia="0.0 0.0 0.0"/>
+                                    <geom type="mesh" rgba="1 1 1 1" mesh="gripper_base_link"/>
+                                    <geom pos="0.04 0 0.12" quat="0.6830127 0.6830127 0.1830127 -0.1830127" type="mesh" rgba="0.1 0.1 0.1 1" mesh="camera_link" />
+                                    <camera name="end_camera" pos="0.066 0 0.105" quat="0.8660254 0.0 -0.5 0.0" fovy="50"/>
+
+                                    # ee frame
+                                    <body name="ee_frame" pos="0.1870 0.0 0.0" quat="1 0 0 0">
+                                        <inertial pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" mass="0.0" diaginertia="0.0 0.0 0.0"/>
+                                        <geom type="cylinder" size="0.002 0.01" pos="0.01 0.00 0.00" quat="0.7071068 0.0000000 0.7071068 0.0000000" rgba="1 0 0 1" contype="0" conaffinity="0" group="4"/>
+                                        <geom type="cylinder" size="0.002 0.01" pos="0.00 0.01 0.00" quat="0.7071068 0.7071068 0.0000000 0.0000000" rgba="0 1 0 1" contype="0" conaffinity="0" group="4"/>
+                                        <geom type="cylinder" size="0.002 0.01" pos="0.00 0.00 0.01" quat="1.0000000 0.0000000 0.0000000 0.0000000" rgba="0 0 1 1" contype="0" conaffinity="0" group="4"/>
+                                    </body>
+
+                                    # gripper helper
+                                    <body name="gripper_left_helper_link" pos="0.057667 0.030604 2.5e-05">
+                                        <inertial pos="0.00299357 0.0232625 -5e-05" quat="0.996724 0 0 0.0808839" mass="1e-6" diaginertia="2.74798e-06 1.47567e-06 1.34732e-06"/>
+                                        <joint name="gripper_left_help_joint" class="jg_class" pos="0 0 0" axis="0 0 -1" range="0 1.52" limited="true" />
+                                        <geom type="mesh" rgba="1 1 1 1" mesh="gripper_left_helper_link"/>
+                                    </body>
+                                    <body name="gripper_right_helper_link" pos="0.057667 -0.030604 2.5e-05">
+                                        <inertial pos="0.00299357 -0.0232625 -5e-05" quat="0.996724 0 0 -0.0808839" mass="1e-6" diaginertia="2.74798e-06 1.47567e-06 1.34732e-06"/>
+                                        <joint name="gripper_right_help_joint" class="jg_class" pos="0 0 0" axis="0 0 1" range="0 1.52" limited="true" />
+                                        <geom type="mesh" rgba="1 1 1 1" mesh="gripper_right_helper_link"/>
+                                    </body>
+
+                                    # left gripper
+                                    <body name="gripper_left_link_1" pos="0.0721 0.014 2.5e-05">
+                                        <inertial pos="0.00299357 0.0232625 -5e-05" quat="0.996724 0 0 0.0808839" mass="1e-6" diaginertia="2.74798e-06 1.47567e-06 1.34732e-06"/>
+                                        <joint name="gripper_left_joint_1" class="jg_class" pos="0 0 0" axis="0 0 -1" range="0 1.52" limited="true" />
+                                        <geom type="mesh" rgba="1 1 1 1" mesh="gripper_left_link_1"/>
+
+                                        <body name="gripper_left_link_2" pos="0.0085108 0.04927 0">
+                                            <inertial pos="0.0255016 0.00914642 -0.00175617" quat="0.424541 0.412629 0.571518 0.568216" mass="1e-6" diaginertia="1.36949e-05 1.35554e-05 3.4264e-06"/>
+                                            <joint name="gripper_left_joint_2" class="jg_class" pos="0 0 0" axis="0 0 1" range="0 1.52" limited="true" />
+                                            <geom type="mesh" rgba="1 1 1 1" mesh="gripper_left_link_2"/>
+                                        </body>
+                                    </body>
+
+                                    # right gripper
+                                    <body name="gripper_right_link_1" pos="0.0721 -0.014 2.5e-05">
+                                        <inertial pos="0.00299357 -0.0232625 -5e-05" quat="0.996724 0 0 -0.0808839" mass="1e-6" diaginertia="2.74798e-06 1.47567e-06 1.34732e-06"/>
+                                        <joint name="gripper_right_joint_1" class="jg_class" pos="0 0 0" axis="0 0 1" range="0 1.52" limited="true" />
+                                        <geom type="mesh" rgba="1 1 1 1" mesh="gripper_right_link_1"/>
+
+                                        <body name="gripper_right_link_2" pos="0.0085108 -0.04927 0">
+                                            <inertial pos="0.0255016 -0.00914642 -0.00175616" quat="0.568212 0.571522 0.412623 0.424547" mass="1e-6" diaginertia="1.36948e-05 1.35553e-05 3.4264e-06"/>
+                                            <joint name="gripper_right_joint_2" class="jg_class" pos="0 0 0" axis="0 0 -1" range="0 1.52" limited="true" />
+                                            <geom type="mesh" rgba="1 1 1 1" mesh="gripper_right_link_2"/>
+                                        </body>
+                                    </body>
+                                </body>
+                            </body>
+                        </body>
+                    </body>
+                </body>
+            </body>
+        </body>
+    </body>
+</mujocoinclude>
