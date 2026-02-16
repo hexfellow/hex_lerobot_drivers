@@ -23,13 +23,15 @@ pip install lerobot_camera_berxel
 
 ### Usage
 
-Assume you want to use the `hello_follower` teleoperator to control the `fireflyy6_follower` robot, you can run the following command:
+Assume you want to use the `hello` teleoperator to control the simulated `archer_y6` robot, you can run the following command:
 
 ```bash
 lerobot-teleoperate \
-    --robot.type=fireflyy6_follower \
-    --teleop.type=hello_follower \
-    --fps=60
+    --robot.type=hex_archer_y6_sim_follower \
+    --robot.headless=True \
+    --teleop.type=hex_hello_leader \
+    --teleop.host="172.18.24.90" \
+    --display_data=True
 ```
 
 ## Devices
