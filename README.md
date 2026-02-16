@@ -6,26 +6,19 @@ Brings a series of integration for HEXFELLOW devices and LeRobot.
 
 ### Installation
 
+To install all drivers, run the following command:
+
 ```bash
-pip install hex_lerobot_drivers
+pip install -r all_drivers.txt
 ```
 
-If you want to use Berxel devices, install the extras:
+Or you can install each driver individually:
 
 ```bash
-pip install hex_lerobot_drivers[berxel]
-```
-
-If you want to use Simulated robots, install the extras:
-
-```bash
-pip install hex_lerobot_drivers[mujoco]
-```
-
-Or you can just install all extras:
-
-```bash
-pip install hex_lerobot_drivers[all]
+pip install lerobot_robot_archer_y6_sim
+pip install lerobot_teleoperator_hello
+pip install lerobot_camera_berxel
+...
 ```
 
 ### Usage
@@ -41,15 +34,16 @@ lerobot-teleoperate \
 
 ## Devices
 
-| Device                   | Type   | Description                       | Extra  |
-| ------------------------ | ------ | --------------------------------- | ------ |
-| `firefly_y6_follower`    | Robot  | The robot for Firefly Y6          | \      |
-| `archer_y6_follower`     | Robot  | The robot for Archer Y6           | \      |
-| `bi_archer_y6_follower`  | Robot  | The robot for double Archer Y6    | \      |
-| `archer_y6_sim_follower` | Robot  | The simulated robot for Archer Y6 | mujoco |
-| `hello_leader`           | Teleop | The teleoperator for Hello        | \      |
-| `bi_hello_leader`        | Teleop | The teleoperator for double Hello | \      |
-| `berxel_camera`          | Camera | The camera for Berxel devices     | berxel |
+| Device            | Type   | Description                       | pip package                     |
+| ----------------- | ------ | --------------------------------- | ------------------------------- |
+| **firefly_y6**    | Robot  | The robot for Firefly Y6          | `lerobot_robot_firefly_y6`      |
+| **archer_y6**     | Robot  | The robot for Archer Y6           | `lerobot_robot_archer_y6`       |
+| **bi_archer_y6**  | Robot  | The robot for double Archer Y6    | `lerobot_robot_bi_archer_y6`    |
+| **archer_y6_sim** | Robot  | The simulated robot for Archer Y6 | `lerobot_robot_archer_y6_sim`   |
+| **hello**         | Teleop | The teleoperator for Hello        | `lerobot_teleoperator_hello`    |
+| **bi_hello**      | Teleop | The teleoperator for double Hello | `lerobot_teleoperator_bi_hello` |
+| **fake**          | Camera | The simulated camera              | `lerobot_camera_fake`           |
+| **berxel**        | Camera | The camera for Berxel devices     | `lerobot_camera_berxel`         |
 
 ## License
 

@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools >= 61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lerobot_camera_berxel"
+version = "0.0.1-alpha.1"
+description = "LeRobot Berxel camera plugin for HEXFELLOW devices"
+readme = "README.md"
+license = "Apache-2.0"
+authors = [{ name = "Dong Zhaorui", email = "dzr159@gmail.com" }]
+maintainers = [
+  { name = "jecjune", email = "zejun.chen@hexfellow.com" },
+  { name = "Dong Zhaorui", email = "dzr159@gmail.com" },
+]
+keywords = ["lerobot", "camera", "berxel", "hexfellow"]
+requires-python = ">=3.10"
+dependencies = [
+  "berxel_py_wrapper>=2.0.189",
+  "lerobot>=0.4",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Operating System :: POSIX :: Linux",
+]
+
+[project.urls]
+Homepage = "https://github.com/hexfellow/hex_lerobot_drivers"
+Repository = "https://github.com/hexfellow/hex_lerobot_drivers.git"
+"Bug Tracker" = "https://github.com/hexfellow/hex_lerobot_drivers/issues"
+Documentation = "https://github.com/hexfellow/hex_lerobot_drivers/wiki"
