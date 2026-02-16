@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lerobot_teleoperator_hello"
-version = "0.0.1-alpha.1"
+version = "0.0.1"
 description = "HEXFELLOW LeRobot Drivers"
 readme = "README.md"
 license = "Apache-2.0"

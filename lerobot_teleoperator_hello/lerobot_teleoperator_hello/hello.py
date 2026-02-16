@@ -13,19 +13,19 @@ import numpy as np
 from hex_device import HexDeviceApi, Arm, Hands
 
 from lerobot.teleoperators import Teleoperator
-from lerobot.utils.errors import DeviceNotConnectedError
+from lerobot.utils.errors import DeviceAlreadyConnectedError, DeviceNotConnectedError
 
 from .config_hello import HexHelloLeaderConfig
 
 
 class HexHelloLeader(Teleoperator):
-    """Hello leader arm teleoperator for LeRobot using hex_device."""
 
     config_class = HexHelloLeaderConfig
     name = "hex_hello_leader"
 
     def __init__(self, config: HexHelloLeaderConfig):
         super().__init__(config)
+        self.config = config
 
         # config
         self.__device_url = f"ws://{config.host}:{config.port}"
@@ -42,7 +42,7 @@ class HexHelloLeader(Teleoperator):
         self.__gripper_state_buffer: dict | None = None
 
         # state
-        self.__connected = False
+        self.__connected_flag = False
 
     @property
     def action_features(self) -> dict[str, type]:
@@ -59,9 +59,12 @@ class HexHelloLeader(Teleoperator):
 
     @property
     def is_connected(self) -> bool:
-        return self.__connected
+        return self.__connected_flag
 
     def connect(self, calibrate: bool = True) -> None:
+        if self.is_connected:
+            raise DeviceAlreadyConnectedError(f"{self} is already connected.")
+
         # open device
         self.__hex_api = HexDeviceApi(
             ws_url=self.__device_url,
@@ -81,12 +84,12 @@ class HexHelloLeader(Teleoperator):
             print("\033[33mGripper not found\033[0m")
         self.__gripper.set_rgb_stripe_command([0] * 6, [255] * 6, [0] * 6)
 
-        self.__connected = True
+        self.__connected_flag = True
 
     def disconnect(self) -> None:
-        if not self.__connected:
+        if not self.__connected_flag:
             return
-        self.__connected = False
+        self.__connected_flag = False
         self.__gripper.set_rgb_stripe_command([255] * 6, [0] * 6, [0] * 6)
         time.sleep(0.2)
         self.__arm.stop()
@@ -100,20 +103,21 @@ class HexHelloLeader(Teleoperator):
         pass
 
     def configure(self) -> None:
-        """Apply configuration to the teleoperator. No-op for Hello leader."""
         pass
 
     def get_action(self) -> dict[str, Any]:
         if not self.is_connected:
             raise DeviceNotConnectedError(f"{self} is not connected.")
 
-        self.__arm_state_buffer = self.__arm.get_simple_motor_status()
-        self.__gripper_state_buffer = self.__gripper.get_simple_motor_status()
-
-        arm_ready = self.__arm_state_buffer is not None
-        gripper_ready = self.__gripper is None or self.__gripper_state_buffer is not None
-        if not arm_ready or not gripper_ready:
-            raise DeviceNotConnectedError(f"{self} is not connected.")
+        arm_ready, gripper_ready = False, False
+        while not arm_ready or not gripper_ready:
+            self.__arm_state_buffer = self.__arm.get_simple_motor_status()
+            self.__gripper_state_buffer = self.__gripper.get_simple_motor_status(
+            )
+            arm_ready = self.__arm_state_buffer is not None
+            gripper_ready = self.__gripper_state_buffer is not None
+            if not arm_ready or not gripper_ready:
+                time.sleep(0.1)
 
         arm_pos = self.__arm_state_buffer['pos']
         gripper_pos = self.__gripper_state_buffer['pos']
@@ -122,7 +126,7 @@ class HexHelloLeader(Teleoperator):
             f"joint_{i+1}.pos": float(arm_pos[i])
             for i in range(len(arm_pos))
         } | {
-            "gripper.value": float(np.clip(gripper_pos[0] / 2 + 0.5, 0.0, 1.0))
+            "gripper.value": float(np.clip((gripper_pos[0] + 1.0) * 0.5, 0.0, 1.0))
         }
         return action
 

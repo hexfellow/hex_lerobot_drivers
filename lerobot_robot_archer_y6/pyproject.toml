@@ -29,7 +29,7 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/hexfellow/hex_zmq_servers"
-Repository = "https://github.com/hexfellow/hex_zmq_servers.git"
-"Bug Tracker" = "https://github.com/hexfellow/hex_zmq_servers/issues"
-Documentation = "https://github.com/hexfellow/hex_zmq_servers/wiki"
+Homepage = "https://github.com/hexfellow/hex_lerobot_drivers"
+Repository = "https://github.com/hexfellow/hex_lerobot_drivers.git"
+"Bug Tracker" = "https://github.com/hexfellow/hex_lerobot_drivers/issues"
+Documentation = "https://github.com/hexfellow/hex_lerobot_drivers/wiki"

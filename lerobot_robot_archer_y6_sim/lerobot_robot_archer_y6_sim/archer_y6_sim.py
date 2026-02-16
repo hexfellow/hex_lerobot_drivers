@@ -9,8 +9,8 @@
 import os
 import copy
 import threading
-from collections import deque
 import numpy as np
+from collections import deque
 from functools import cached_property
 from typing import Any
 
@@ -35,6 +35,7 @@ class HexArcherY6SimFollower(Robot):
 
     def __init__(self, config: HexArcherY6SimFollowerConfig):
         super().__init__(config)
+        self.config = config
 
         self.__sim_rate = int(config.sim_rate)
         state_rate = config.state_rate
@@ -103,9 +104,17 @@ class HexArcherY6SimFollower(Robot):
         self.__data.qpos = self.__model.key_qpos[keyframe_id]
         self.__data.qvel = np.zeros_like(self.__data.qvel)
         self.__data.ctrl = np.zeros_like(self.__data.ctrl)
-        self.__rgb_cam = mujoco.Renderer(self.__model, 224, 224)
         self.__states_trig_thresh = int(self.__sim_rate / state_rate)
+
+        self.__rgb_cam, self.__depth_cam = None, None
+        if "fake" in self.config.cameras:
+            width = self.config.cameras["fake"].width
+            height = self.config.cameras["fake"].height
+            self.__rgb_cam = mujoco.Renderer(self.__model, height, width)
+            self.__depth_cam = mujoco.Renderer(self.__model, height, width)
+            self.__depth_cam.enable_depth_rendering()
         self.__images_trig_thresh = int(self.__sim_rate / image_rate)
+
         self.__viewer = None
 
         self.cameras = make_cameras_from_configs(config.cameras)
@@ -142,7 +151,10 @@ class HexArcherY6SimFollower(Robot):
 
     def connect(self) -> None:
         mujoco.mj_forward(self.__model, self.__data)
-        self.__viewer = viewer.launch_passive(self.__model, self.__data)
+        if not self.config.headless:
+            self.__viewer = viewer.launch_passive(self.__model, self.__data)
+        else:
+            self.__viewer = None
 
         for cam in self.cameras.values():
             cam.connect()
@@ -156,6 +168,9 @@ class HexArcherY6SimFollower(Robot):
         self.__work_event.clear()
         self.__work_thread.join()
         self.__ready_event.clear()
+        if self.__viewer is not None:
+            self.__viewer.close()
+            self.__viewer = None
         for cam in self.cameras.values():
             cam.disconnect()
 
@@ -167,11 +182,10 @@ class HexArcherY6SimFollower(Robot):
         pass
 
     def configure(self) -> None:
-        """Apply configuration to the robot. No-op for Archer Y6 sim."""
         pass
 
     def get_observation(self) -> dict[str, Any]:
-        if not self.__work_event.is_set():
+        if not self.is_connected:
             raise DeviceNotConnectedError(f"{self} is not connected.")
 
         self.__ready_event.wait()
@@ -182,7 +196,7 @@ class HexArcherY6SimFollower(Robot):
         return obs
 
     def send_action(self, action: dict[str, Any]) -> dict[str, Any]:
-        if not self.__work_event.is_set():
+        if not self.is_connected:
             raise DeviceNotConnectedError(f"{self} is not connected.")
 
         self.__ready_event.wait()
@@ -220,8 +234,13 @@ class HexArcherY6SimFollower(Robot):
                 images_trig_count = 0
                 self.__rgb_cam.update_scene(self.__data, "end_camera")
                 rgb_img = self.__rgb_cam.render()
+                # self.__depth_cam.update_scene(self.__data, "end_camera")
+                # depth_m = self.__depth_cam.render().astype(np.float32)
+                # depth_img = np.clip(depth_m * 1000.0, 0,
+                #                     65535).astype(np.uint16)
                 if "fake" in self.cameras:
-                    self.cameras["fake"].append_image(rgb_img)
+                    self.cameras["fake"].append_rgb(rgb_img)
+                    # self.cameras["fake"].append_depth(depth_img)
 
             mujoco.mj_step(self.__model, self.__data)
             if self.__viewer is not None:

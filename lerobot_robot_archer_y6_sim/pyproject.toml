@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lerobot_robot_archer_y6_sim"
-version = "0.0.1-alpha.1"
+version = "0.0.1"
 description = "HEXFELLOW LeRobot Drivers"
 readme = "README.md"
 license = "Apache-2.0"
@@ -19,7 +19,7 @@ dependencies = [
   "mujoco>=3.3.3",
   "hex_robo_utils>=0.2.0,<0.3.0",
   "lerobot>=0.4",
-  # "lerobot_camera_fake>=0.0.1",
+  "lerobot_camera_fake>=0.0.1",
 ]
 
 classifiers = [
@@ -35,7 +35,7 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/hexfellow/hex_zmq_servers"
-Repository = "https://github.com/hexfellow/hex_zmq_servers.git"
-"Bug Tracker" = "https://github.com/hexfellow/hex_zmq_servers/issues"
-Documentation = "https://github.com/hexfellow/hex_zmq_servers/wiki"
+Homepage = "https://github.com/hexfellow/hex_lerobot_drivers"
+Repository = "https://github.com/hexfellow/hex_lerobot_drivers.git"
+"Bug Tracker" = "https://github.com/hexfellow/hex_lerobot_drivers/issues"
+Documentation = "https://github.com/hexfellow/hex_lerobot_drivers/wiki"
