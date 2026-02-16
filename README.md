@@ -34,16 +34,16 @@ lerobot-teleoperate \
 
 ## Devices
 
-| Device            | Type   | Description                       | pip package                     |
-| ----------------- | ------ | --------------------------------- | ------------------------------- |
-| **firefly_y6**    | Robot  | The robot for Firefly Y6          | `lerobot_robot_firefly_y6`      |
-| **archer_y6**     | Robot  | The robot for Archer Y6           | `lerobot_robot_archer_y6`       |
-| **bi_archer_y6**  | Robot  | The robot for double Archer Y6    | `lerobot_robot_bi_archer_y6`    |
-| **archer_y6_sim** | Robot  | The simulated robot for Archer Y6 | `lerobot_robot_archer_y6_sim`   |
-| **hello**         | Teleop | The teleoperator for Hello        | `lerobot_teleoperator_hello`    |
-| **bi_hello**      | Teleop | The teleoperator for double Hello | `lerobot_teleoperator_bi_hello` |
-| **fake**          | Camera | The simulated camera              | `lerobot_camera_fake`           |
-| **berxel**        | Camera | The camera for Berxel devices     | `lerobot_camera_berxel`         |
+| Device            | Status |  Type  | Description                       |           pip package           |
+| ----------------- | :----: | :----: | --------------------------------- | :-----------------------------: |
+| **firefly_y6**    |   🟡    | Robot  | The robot for Firefly Y6          |   `lerobot_robot_firefly_y6`    |
+| **archer_y6**     |   🟡    | Robot  | The robot for Archer Y6           |    `lerobot_robot_archer_y6`    |
+| **bi_archer_y6**  |   🟡    | Robot  | The robot for double Archer Y6    |  `lerobot_robot_bi_archer_y6`   |
+| **archer_y6_sim** |   🟢    | Robot  | The simulated robot for Archer Y6 |  `lerobot_robot_archer_y6_sim`  |
+| **hello**         |   🟢    | Teleop | The teleoperator for Hello        |  `lerobot_teleoperator_hello`   |
+| **bi_hello**      |   🟡    | Teleop | The teleoperator for double Hello | `lerobot_teleoperator_bi_hello` |
+| **fake**          |   🟢    | Camera | The simulated camera              |      `lerobot_camera_fake`      |
+| **berxel**        |   🟡    | Camera | The camera for Berxel devices     |     `lerobot_camera_berxel`     |
 
 ## License
 
