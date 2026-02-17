@@ -3,8 +3,8 @@ requires = ["setuptools >= 61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "lerobot_robot_archer_y6_sim"
-version = "0.0.1-alpha.1"
+name = "lerobot_robot_hex_arm_sim"
+version = "0.0.1"
 description = "HEXFELLOW LeRobot Drivers"
 readme = "README.md"
 license = "Apache-2.0"
@@ -15,7 +15,13 @@ maintainers = [
 ]
 keywords = ["hex_lerobot_drivers"]
 requires-python = ">=3.10"
-dependencies = ["mujoco>=3.3.3", "hex_robo_utils>=0.2.0,<0.3.0", "lerobot>=0.4"]
+dependencies = [
+  "mujoco>=3.3.3",
+  "hex_robo_utils>=0.2.0,<0.3.0",
+  "lerobot>=0.4",
+  "lerobot_camera_fake>=0.0.1",
+]
+
 classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",

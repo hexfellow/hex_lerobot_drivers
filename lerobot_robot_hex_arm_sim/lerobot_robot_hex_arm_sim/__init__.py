@@ -6,10 +6,10 @@
 # Date  : 2026-02-15
 ################################################################
 
-from .archer_y6_sim import HexArcherY6SimFollower
-from .config_archer_y6_sim import HexArcherY6SimFollowerConfig
+from .hex_arm_sim import HexArmSimFollower
+from .config_hex_arm_sim import HexArmSimFollowerConfig
 
 __all__ = [
-    "HexArcherY6SimFollower",
-    "HexArcherY6SimFollowerConfig",
+    "HexArmSimFollower",
+    "HexArmSimFollowerConfig",
 ]

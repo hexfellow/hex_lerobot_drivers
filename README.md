@@ -23,11 +23,11 @@ pip install lerobot_camera_berxel
 
 ### Usage
 
-Assume you want to use the `hello` teleoperator to control the simulated `archer_y6` robot, you can run the following command:
+Assume you want to use the `hello` teleoperator to control the simulated `hex_arm` robot, you can run the following command:
 
 ```bash
 lerobot-teleoperate \
-    --robot.type=hex_archer_y6_sim_follower \
+    --robot.type=hex_arm_sim_follower \
     --robot.headless=True \
     --teleop.type=hex_hello_leader \
     --teleop.host="172.18.24.90" \
@@ -36,16 +36,15 @@ lerobot-teleoperate \
 
 ## Devices
 
-| Device            | Status |  Type  | Description                       |           pip package           |
-| ----------------- | :----: | :----: | --------------------------------- | :-----------------------------: |
-| **firefly_y6**    |   🟡    | Robot  | The robot for Firefly Y6          |   `lerobot_robot_firefly_y6`    |
-| **archer_y6**     |   🟡    | Robot  | The robot for Archer Y6           |    `lerobot_robot_archer_y6`    |
-| **bi_archer_y6**  |   🟡    | Robot  | The robot for double Archer Y6    |  `lerobot_robot_bi_archer_y6`   |
-| **archer_y6_sim** |   🟢    | Robot  | The simulated robot for Archer Y6 |  `lerobot_robot_archer_y6_sim`  |
-| **hello**         |   🟢    | Teleop | The teleoperator for Hello        |  `lerobot_teleoperator_hello`   |
-| **bi_hello**      |   🟡    | Teleop | The teleoperator for double Hello | `lerobot_teleoperator_bi_hello` |
-| **fake**          |   🟢    | Camera | The simulated camera              |      `lerobot_camera_fake`      |
-| **berxel**        |   🟡    | Camera | The camera for Berxel devices     |     `lerobot_camera_berxel`     |
+| Device             | Status |  Type  | Description                       |             pip package             |
+| ------------------ | :----: | :----: | --------------------------------- | :---------------------------------: |
+| **hex_arm**        |   🟢    | Robot  | The robot for Hex Arm             |       `lerobot_robot_hex_arm`       |
+| **hex_arm_sim**    |   🟢    | Robot  | The simulated robot for Hex Arm   |     `lerobot_robot_hex_arm_sim`     |
+| **hex_arm_double** |   🟡    | Robot  | The robot for double Hex Arm      |   `lerobot_robot_hex_arm_double`    |
+| **hello**          |   🟢    | Teleop | The teleoperator for Hello        |    `lerobot_teleoperator_hello`     |
+| **hello_double**   |   🟡    | Teleop | The teleoperator for double Hello | `lerobot_teleoperator_hello_double` |
+| **fake**           |   🟢    | Camera | The simulated camera              |        `lerobot_camera_fake`        |
+| **berxel**         |   🟡    | Camera | The camera for Berxel devices     |       `lerobot_camera_berxel`       |
 
 ## License
 

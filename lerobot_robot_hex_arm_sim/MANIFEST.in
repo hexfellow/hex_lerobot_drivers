@@ -3,8 +3,8 @@ include README.md
 include requirements.txt
 
 recursive-include package_name *
-recursive-include lerobot_robot_archer_y6_sim/mujoco * *
-recursive-include lerobot_robot_archer_y6_sim/urdf * *
+recursive-include lerobot_robot_hex_arm_sim/mujoco * *
+recursive-include lerobot_robot_hex_arm_sim/urdf * *
 
 recursive-exclude * *.pyc
 recursive-exclude * .DS_Store

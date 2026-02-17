@@ -18,4 +18,4 @@ class HexHelloLeaderConfig(TeleoperatorConfig):
 
     host: str = "127.0.0.1"
     port: int = 8439
-    control_hz: int = 250
+    control_hz: int = 500

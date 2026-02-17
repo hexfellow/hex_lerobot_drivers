@@ -7,8 +7,8 @@
 ################################################################
 
 import time
-from typing import Any
 import numpy as np
+from typing import Any
 
 from hex_device import HexDeviceApi, Arm, Hands
 
@@ -50,6 +50,9 @@ class HexHelloLeader(Teleoperator):
             f"joint_{i}.pos": float
             for i in range(1, 7)
         } | {
+            f"joint_{i}.vel": float
+            for i in range(1, 7)
+        } | {
             "gripper.value": float
         }
 
@@ -73,16 +76,19 @@ class HexHelloLeader(Teleoperator):
 
         # open arm
         while self.__hex_api.find_device_by_robot_type(26) is None:
-            print("\033[33mArm not found\033[0m")
+            print("\033[33mHello Arm not found\033[0m")
             time.sleep(1)
         self.__arm = self.__hex_api.find_device_by_robot_type(26)
         self.__arm.start()
+        print("\033[32mHello Arm connected\033[0m")
 
         # try to open gripper
+        while self.__hex_api.find_optional_device_by_id(1) is None:
+            print("\033[33mHello Gripper not found\033[0m")
+            time.sleep(1)
         self.__gripper = self.__hex_api.find_optional_device_by_id(1)
-        if self.__gripper is None:
-            print("\033[33mGripper not found\033[0m")
         self.__gripper.set_rgb_stripe_command([0] * 6, [255] * 6, [0] * 6)
+        print("\033[32mHello Gripper connected\033[0m")
 
         self.__connected_flag = True
 
@@ -120,13 +126,18 @@ class HexHelloLeader(Teleoperator):
                 time.sleep(0.1)
 
         arm_pos = self.__arm_state_buffer['pos']
+        arm_vel = self.__arm_state_buffer['vel']
         gripper_pos = self.__gripper_state_buffer['pos']
 
         action = {
             f"joint_{i+1}.pos": float(arm_pos[i])
             for i in range(len(arm_pos))
         } | {
-            "gripper.value": float(np.clip((gripper_pos[0] + 1.0) * 0.5, 0.0, 1.0))
+            f"joint_{i+1}.vel": float(arm_vel[i])
+            for i in range(len(arm_vel))
+        } | {
+            "gripper.value": float(
+                np.clip((gripper_pos[0] + 1.0) * 0.5, 0.0, 1.0))
         }
         return action
 
