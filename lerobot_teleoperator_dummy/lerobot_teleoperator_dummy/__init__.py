@@ -6,10 +6,11 @@
 # Date  : 2026-02-15
 ################################################################
 
-from .camera_fake import FakeCamera
-from .configuration_fake import FakeCameraConfig
+from .dummy import HexDummyLeader
+from .config_dummy import HexDummyLeaderConfig, HexDummyLeaderConfigBase
 
 __all__ = [
-    "FakeCamera",
-    "FakeCameraConfig",
+    "HexDummyLeader",
+    "HexDummyLeaderConfig",
+    "HexDummyLeaderConfigBase",
 ]

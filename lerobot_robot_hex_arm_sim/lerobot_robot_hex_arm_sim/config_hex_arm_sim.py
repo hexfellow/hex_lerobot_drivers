@@ -9,8 +9,8 @@
 from dataclasses import dataclass, field
 
 from lerobot.robots import RobotConfig
-from lerobot.cameras import Cv2Rotation
-from lerobot_camera_fake import FakeCameraConfig
+from lerobot.cameras import CameraConfig, Cv2Rotation
+from lerobot_camera_dummy import HexDummyCameraConfig
 
 
 @RobotConfig.register_subclass("hex_arm_sim_follower")
@@ -28,10 +28,10 @@ class HexArmSimFollowerConfig(RobotConfig):
     mit_kd: list[float] = field(
         default_factory=lambda: [5.0, 5.0, 5.0, 5.0, 2.0, 2.0, 0.5])
 
-    cameras: dict[str, FakeCameraConfig] = field(
+    cameras: dict[str, CameraConfig] = field(
         default_factory=lambda: {
-            "fake":
-            FakeCameraConfig(
+            "dummy":
+            HexDummyCameraConfig(
                 width=224,
                 height=224,
                 fps=30,

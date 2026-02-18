@@ -11,9 +11,9 @@ from dataclasses import dataclass
 from lerobot.cameras import CameraConfig, ColorMode, Cv2Rotation
 
 
-@CameraConfig.register_subclass("fake_camera")
+@CameraConfig.register_subclass("hex_dummy_camera")
 @dataclass
-class FakeCameraConfig(CameraConfig):
+class HexDummyCameraConfig(CameraConfig):
 
     width: int = 224
     height: int = 224

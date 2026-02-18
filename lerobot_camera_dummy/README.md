@@ -1,11 +1,11 @@
-# lerobot_camera_fake
+# lerobot_camera_dummy
 
 LeRobot simulated camera plugin for Hex Arm (MuJoCo).
 
 ## Installation
 
 ```bash
-pip install lerobot_camera_fake
+pip install lerobot_camera_dummy
 ```
 
 ## Usage

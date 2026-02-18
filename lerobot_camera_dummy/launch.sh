@@ -23,17 +23,16 @@ while [[ $# -gt 0 ]]; do
 done
 
 if $IS_REALTIME; then
+	echo "Real Time Mode"
 	PREFIX="taskset -c 14,15,16,17,18,19,20,21,22,23 chrt 80"
 else
-    PREFIX=""
+	echo "Normal Mode"
+	PREFIX=""
 fi
 
-HELLO_HOST="172.18.24.90"
-HELLO_PORT=8439
 $PREFIX lerobot-teleoperate \
 	--robot.type=hex_arm_sim_follower \
 	--robot.headless=False \
-	--teleop.type=hex_hello_leader \
-	--teleop.host=$HELLO_HOST \
-	--teleop.port=$HELLO_PORT \
+	--teleop.type=hex_dummy_leader \
 	--display_data=True
+

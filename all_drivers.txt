@@ -1,3 +1,8 @@
-lerobot_camera_fake>=0.0.1
-lerobot_robot_archer_y6_sim>=0.0.1
+lerobot_robot_hex_arm>=0.0.1
+lerobot_robot_hex_arm_sim>=0.0.1
+lerobot_robot_hex_arm_double>=0.0.1
+lerobot_teleoperator_dummy>=0.0.1
 lerobot_teleoperator_hello>=0.0.1
+lerobot_teleoperator_hello_double>=0.0.1
+lerobot_camera_dummy>=0.0.1
+lerobot_camera_berxel>=0.0.1

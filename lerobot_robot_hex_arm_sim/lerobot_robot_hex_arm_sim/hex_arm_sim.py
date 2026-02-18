@@ -42,7 +42,7 @@ class HexArmSimFollower(Robot):
         script_dir = os.path.dirname(os.path.abspath(__file__))
         self.__work_event = threading.Event()
         self.__ready_event = threading.Event()
-        self.__work_thread = threading.Thread(target=self.work_loop)
+        self.__work_thread = threading.Thread(target=self.__work_loop)
         self.__obs_queue = deque(maxlen=10)
         self.__cmd_queue = deque(maxlen=10)
 
@@ -96,9 +96,9 @@ class HexArmSimFollower(Robot):
         self.__states_trig_thresh = int(self.__sim_rate / state_rate)
 
         self.__rgb_cam, self.__depth_cam = None, None
-        if "fake" in self.config.cameras:
-            width = self.config.cameras["fake"].width
-            height = self.config.cameras["fake"].height
+        if "dummy" in self.config.cameras:
+            width = self.config.cameras["dummy"].width
+            height = self.config.cameras["dummy"].height
             self.__rgb_cam = mujoco.Renderer(self.__model, height, width)
             self.__depth_cam = mujoco.Renderer(self.__model, height, width)
             self.__depth_cam.enable_depth_rendering()
@@ -198,11 +198,12 @@ class HexArmSimFollower(Robot):
             raise DeviceNotConnectedError(f"{self} is not connected.")
 
         self.__ready_event.wait()
-        obs = copy.deepcopy(self.__obs_queue[-1])
-        if "fake" in self.cameras:
-            obs["fake"] = self.cameras["fake"].async_read()
+        obs_dict = copy.deepcopy(self.__obs_queue[-1])
+        
+        for cam_key, cam in self.cameras.items():
+            obs_dict[cam_key] = cam.async_read()
 
-        return obs
+        return obs_dict
 
     def send_action(self, action: dict[str, Any]) -> dict[str, Any]:
         if not self.is_connected:
@@ -211,7 +212,7 @@ class HexArmSimFollower(Robot):
         self.__ready_event.wait()
         self.__cmd_queue.append(action)
 
-    def work_loop(self) -> None:
+    def __work_loop(self) -> None:
         rate = HexRate(self.__sim_rate)
         states_trig_count = 0
         images_trig_count = 0
@@ -226,7 +227,7 @@ class HexArmSimFollower(Robot):
                 self.__obs_queue.append(obs)
 
                 if not self.__ready_event.is_set():
-                    fake_cmd = {
+                    init_cmd = {
                         f"joint_{i+1}.pos": float(obs[f"joint_{i+1}.pos"])
                         for i in range(self.__dofs["robot_arm"])
                     } | {
@@ -238,23 +239,24 @@ class HexArmSimFollower(Robot):
                                self.__limits[self.__state_idx["robot_gripper"],
                                              0, 0]) / self.__gripper_ratio)
                     }
-                    self.__cmd_queue.append(fake_cmd)
+                    self.__cmd_queue.append(init_cmd)
                     self.__ready_event.set()
 
                 cmd = self.__cmd_queue[-1]
                 self.__inner_send_action(cmd)
 
+            
             if images_trig_count >= self.__images_trig_thresh:
                 images_trig_count = 0
-                self.__rgb_cam.update_scene(self.__data, "end_camera")
-                rgb_img = self.__rgb_cam.render()
-                # self.__depth_cam.update_scene(self.__data, "end_camera")
-                # depth_m = self.__depth_cam.render().astype(np.float32)
-                # depth_img = np.clip(depth_m * 1000.0, 0,
-                #                     65535).astype(np.uint16)
-                if "fake" in self.cameras:
-                    self.cameras["fake"].append_rgb(rgb_img)
-                    # self.cameras["fake"].append_depth(depth_img)
+                if "dummy" in self.cameras:
+                    self.__rgb_cam.update_scene(self.__data, "end_camera")
+                    rgb_img = self.__rgb_cam.render()
+                    self.cameras["dummy"].append_rgb(rgb_img)
+                    # self.__depth_cam.update_scene(self.__data, "end_camera")
+                    # depth_m = self.__depth_cam.render().astype(np.float32)
+                    # depth_img = np.clip(depth_m * 1000.0, 0,
+                    #                     65535).astype(np.uint16)
+                    # self.cameras["dummy"].append_depth(depth_img)
 
             mujoco.mj_step(self.__model, self.__data)
             if self.__viewer is not None:
@@ -342,8 +344,9 @@ class HexArmSimFollower(Robot):
                     self.__limits[self.__state_idx["robot_arm"], 0, 0],
                     self.__limits[self.__state_idx["robot_arm"], 0, 1],
                 )
-        cmd_pos[-self.__dofs[
-            "robot_gripper"]:] = HexArmSimFollower.__gripper_pos_limits(
+        cmd_pos[
+            -self.
+            __dofs["robot_gripper"]:] = HexArmSimFollower.__gripper_pos_limits(
                 cmd_pos[-self.__dofs["robot_gripper"]:],
                 self.__limits[self.__state_idx["robot_gripper"], 0, 0],
                 self.__limits[self.__state_idx["robot_gripper"], 0, 1],

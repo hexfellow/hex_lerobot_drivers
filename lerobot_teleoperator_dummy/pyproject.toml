@@ -3,7 +3,7 @@ requires = ["setuptools >= 61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "lerobot_camera_fake"
+name = "lerobot_teleoperator_dummy"
 version = "0.0.1"
 description = "HEXFELLOW LeRobot Drivers"
 readme = "README.md"
@@ -16,7 +16,6 @@ maintainers = [
 keywords = ["hex_lerobot_drivers"]
 requires-python = ">=3.10"
 dependencies = ["lerobot>=0.4"]
-
 classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",

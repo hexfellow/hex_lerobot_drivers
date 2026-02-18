@@ -66,7 +66,7 @@ class HexArmFollower(Robot):
         # work loop
         self.__work_event = threading.Event()
         self.__ready_event = threading.Event()
-        self.__work_thread = threading.Thread(target=self.work_loop)
+        self.__work_thread = threading.Thread(target=self.__work_loop)
         self.__obs_queue = deque(maxlen=10)
         self.__cmd_queue = deque(maxlen=10)
 
@@ -219,7 +219,7 @@ class HexArmFollower(Robot):
         self.__ready_event.wait()
         self.__cmd_queue.append(action)
 
-    def work_loop(self) -> None:
+    def __work_loop(self) -> None:
         rate = HexRate(self.__control_hz)
         while self.__work_event.is_set():
             rate.sleep()
@@ -230,7 +230,7 @@ class HexArmFollower(Robot):
             self.__obs_queue.append(obs)
 
             if not self.__ready_event.is_set():
-                fake_cmd = {
+                init_cmd = {
                     f"joint_{i+1}.pos": float(obs[f"joint_{i+1}.pos"])
                     for i in range(self.__dofs["robot_arm"])
                 } | {
@@ -242,7 +242,7 @@ class HexArmFollower(Robot):
                            self.__limits[self.__motor_idx["robot_gripper"], 0,
                                          0]) / self.__gripper_ratio)
                 }
-                self.__cmd_queue.append(fake_cmd)
+                self.__cmd_queue.append(init_cmd)
                 self.__ready_event.set()
 
             cmd = self.__cmd_queue[-1]

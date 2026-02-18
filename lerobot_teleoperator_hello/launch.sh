@@ -23,8 +23,10 @@ while [[ $# -gt 0 ]]; do
 done
 
 if $IS_REALTIME; then
+	echo "Real Time Mode"
 	PREFIX="taskset -c 14,15,16,17,18,19,20,21,22,23 chrt 80"
 else
+	echo "Normal Mode"
 	PREFIX=""
 fi
 

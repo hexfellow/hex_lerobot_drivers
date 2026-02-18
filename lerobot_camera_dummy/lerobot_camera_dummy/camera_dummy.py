@@ -18,12 +18,12 @@ from lerobot.cameras import Camera, ColorMode
 from lerobot.cameras.utils import get_cv2_rotation
 from lerobot.utils.errors import DeviceAlreadyConnectedError, DeviceNotConnectedError
 
-from .configuration_fake import FakeCameraConfig
+from .configuration_dummy import HexDummyCameraConfig
 
 
-class FakeCamera(Camera):
+class HexDummyCamera(Camera):
 
-    def __init__(self, config: FakeCameraConfig):
+    def __init__(self, config: HexDummyCameraConfig):
         super().__init__(config)
         self.config = config
 
@@ -31,7 +31,6 @@ class FakeCamera(Camera):
         self.color_mode = config.color_mode
         self.warmup_s = max(config.warmup_s, 1)
         self.rotation: int | None = get_cv2_rotation(config.rotation)
-        print(f"rotation: {self.rotation}")
 
         self.__rgb_queue = deque(maxlen=10)
         self.__depth_queue = deque(maxlen=10)
@@ -74,7 +73,7 @@ class FakeCamera(Camera):
     @staticmethod
     def find_cameras() -> list[dict[str, Any]]:
         raise NotImplementedError(
-            "find_cameras is not implemented for FakeCamera.")
+            "find_cameras is not implemented for HexDummyCamera.")
 
     def read(self,
              color_mode: ColorMode | None = None,
