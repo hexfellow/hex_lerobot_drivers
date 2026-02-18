@@ -12,13 +12,12 @@ from lerobot.robots import RobotConfig
 from lerobot.cameras import CameraConfig
 
 
-@RobotConfig.register_subclass("hex_arm_follower")
 @dataclass
-class HexArmFollowerConfig(RobotConfig):
+class HexArmFollowerConfigBase:
     host: str = "127.0.0.1"
     port: int = 8439
     control_hz: int = 500
-    
+
     arm_type: str = "firefly_y6"
     gripper_type: str = "gp80"
 
@@ -29,4 +28,8 @@ class HexArmFollowerConfig(RobotConfig):
     mit_kd: list[float] = field(
         default_factory=lambda: [5.0, 5.0, 5.0, 5.0, 2.0, 2.0, 0.5])
 
+
+@RobotConfig.register_subclass("hex_arm_follower")
+@dataclass
+class HexArmFollowerConfig(RobotConfig, HexArmFollowerConfigBase):
     cameras: dict[str, CameraConfig] = field(default_factory=dict)

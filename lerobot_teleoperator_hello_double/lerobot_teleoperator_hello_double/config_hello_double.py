@@ -9,16 +9,15 @@
 from dataclasses import dataclass
 
 from lerobot.teleoperators import TeleoperatorConfig
+from lerobot_teleoperator_hello import HexHelloLeaderConfigBase
 
 
+@TeleoperatorConfig.register_subclass("hex_hello_double_leader")
 @dataclass
-class HexHelloLeaderConfigBase:
-    host: str = "127.0.0.1"
-    port: int = 8439
-    control_hz: int = 500
+class HexHelloDoubleLeaderConfig(TeleoperatorConfig):
+    """Configuration for double Hello leader arm teleoperator."""
 
+    left_config: HexHelloLeaderConfigBase
+    right_config: HexHelloLeaderConfigBase
 
-@TeleoperatorConfig.register_subclass("hex_hello_leader")
-@dataclass
-class HexHelloLeaderConfig(TeleoperatorConfig, HexHelloLeaderConfigBase):
-    pass
+    use_mirror_mode: bool = False

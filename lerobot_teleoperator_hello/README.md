@@ -11,5 +11,11 @@ pip install lerobot_teleoperator_hello
 ## Usage
 
 ```bash
-lerobot-teleoperate --robot.type=hex_archer_y6_sim_follower --teleop.type=hex_hello_leader --fps=60
+lerobot-teleoperate \
+    --robot.type=hex_arm_sim_follower \
+    --robot.headless=False \
+    --teleop.type=hex_hello_leader \
+    --teleop.host=$HELLO_HOST \
+    --teleop.port=$HELLO_PORT \
+    --display_data=True
 ```

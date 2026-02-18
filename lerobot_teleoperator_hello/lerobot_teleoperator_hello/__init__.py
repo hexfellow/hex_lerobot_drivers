@@ -7,9 +7,10 @@
 ################################################################
 
 from .hello import HexHelloLeader
-from .config_hello import HexHelloLeaderConfig
+from .config_hello import HexHelloLeaderConfig, HexHelloLeaderConfigBase
 
 __all__ = [
     "HexHelloLeader",
     "HexHelloLeaderConfig",
+    "HexHelloLeaderConfigBase",
 ]

@@ -1,15 +1,21 @@
-# lerobot_robot_archer_y6_sim
+# lerobot_camera_fake
 
-LeRobot simulated robot plugin for Archer Y6 (MuJoCo).
+LeRobot simulated camera plugin for Hex Arm (MuJoCo).
 
 ## Installation
 
 ```bash
-pip install lerobot_robot_archer_y6_sim
+pip install lerobot_camera_fake
 ```
 
 ## Usage
 
 ```bash
-lerobot-teleoperate --robot.type=archer_y6_sim --teleop.type=hello --fps=60
+lerobot-teleoperate \
+    --robot.type=hex_arm_sim_follower \
+    --robot.headless=False \
+    --teleop.type=hex_hello_leader \
+    --teleop.host=$HELLO_HOST \
+    --teleop.port=$HELLO_PORT \
+    --display_data=True
 ```

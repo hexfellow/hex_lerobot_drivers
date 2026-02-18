@@ -20,19 +20,21 @@ class HexArmSimFollowerConfig(RobotConfig):
     state_rate: int = 500
     image_rate: int = 30
     headless: bool = False
-    
+
     pos_err_limit: float = 0.05
     mit_kp: list[float] = field(
         default_factory=lambda:
         [400.0, 400.0, 500.0, 200.0, 100.0, 100.0, 10.0])
     mit_kd: list[float] = field(
         default_factory=lambda: [5.0, 5.0, 5.0, 5.0, 2.0, 2.0, 0.5])
-    
+
     cameras: dict[str, FakeCameraConfig] = field(
-        default_factory=lambda:
-        {"fake": FakeCameraConfig(
-            width=224,
-            height=224,
-            fps=30,
-            rotation=Cv2Rotation.ROTATE_270,
-        )})
+        default_factory=lambda: {
+            "fake":
+            FakeCameraConfig(
+                width=224,
+                height=224,
+                fps=30,
+                rotation=Cv2Rotation.ROTATE_270,
+            )
+        })

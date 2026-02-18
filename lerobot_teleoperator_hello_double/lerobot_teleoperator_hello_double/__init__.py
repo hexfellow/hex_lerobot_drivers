@@ -6,11 +6,10 @@
 # Date  : 2026-02-15
 ################################################################
 
-from .hex_arm import HexArmFollower
-from .config_hex_arm import HexArmFollowerConfig, HexArmFollowerConfigBase
+from .hello_double import HexHelloDoubleLeader
+from .config_hello_double import HexHelloDoubleLeaderConfig
 
 __all__ = [
-    "HexArmFollower",
-    "HexArmFollowerConfig",
-    "HexArmFollowerConfigBase",
+    "HexHelloDoubleLeader",
+    "HexHelloDoubleLeaderConfig",
 ]
