@@ -36,7 +36,7 @@ ARM_GRIPPER_TYPE="gp80"
 HELLO_HOST="172.18.10.251"
 LEFT_HELLO_PORT=8439
 RIGHT_HELLO_PORT=9439
-MIRROR_MODE=false
+MIRROR_MODE=true
 $PREFIX lerobot-teleoperate \
 	--robot.type=hex_arm_double_follower \
 	--robot.left_config.host=$ARM_HOST \
