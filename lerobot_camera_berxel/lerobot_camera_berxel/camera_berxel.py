@@ -30,6 +30,7 @@ class BerxelCamera(Camera):
 
         self.serial_number = config.serial_number
         self.exposure = config.exposure
+        self.use_depth = config.use_depth
 
         self.fps = config.fps
         self.color_mode = config.color_mode
@@ -108,30 +109,46 @@ class BerxelCamera(Camera):
              timeout_ms: int = 0) -> NDArray[Any]:
         if not self.is_connected:
             raise DeviceNotConnectedError(f"{self} is not connected.")
-        self.__rgb_ready_event.wait()
-        rgb = self.__rgb_queue[-1]
-        return rgb
+
+        self.__rgb_ready_event.wait(timeout_ms / 1000)
+        self.__rgb_ready_event.clear()
+        if self.use_depth:
+            self.__depth_ready_event.wait(timeout_ms / 1000)
+            self.__depth_ready_event.clear()
+            return self.__rgb_queue[-1], self.__depth_queue[-1]
+        else:
+            return self.__rgb_queue[-1]
 
     def async_read(self, timeout_ms: float = 200) -> NDArray[Any]:
         if not self.is_connected:
             raise DeviceNotConnectedError(f"{self} is not connected.")
-        self.__rgb_ready_event.wait()
-        rgb = self.__rgb_queue[-1]
-        return rgb
+
+        rgb = None
+        if self.__rgb_ready_event.is_set():
+            self.__rgb_ready_event.clear()
+            rgb = self.__rgb_queue[-1]
+
+        if self.use_depth:
+            if self.__depth_ready_event.is_set():
+                depth = self.__depth_queue[-1]
+            else:
+                depth = None
+            return rgb, depth
+        else:
+            return rgb
 
     def read_latest(self, max_age_ms: int = 1000) -> NDArray[Any]:
-        if not self.is_connected:
-            raise DeviceNotConnectedError(f"{self} is not connected.")
-        self.__rgb_ready_event.wait()
-        rgb = self.__rgb_queue[-1]
-        return rgb
+        return self.async_read(max_age_ms)
 
     def read_depth(self, timeout_ms: int = 200) -> NDArray[Any]:
         if not self.is_connected:
             raise DeviceNotConnectedError(f"{self} is not connected.")
-        self.__depth_ready_event.wait()
-        depth = self.__depth_queue[-1]
-        return depth
+
+        if self.__depth_ready_event.is_set():
+            self.__depth_ready_event.clear()
+            return self.__depth_queue[-1]
+        else:
+            return None
 
     def __work_loop(self) -> None:
         while self.__work_event.is_set():

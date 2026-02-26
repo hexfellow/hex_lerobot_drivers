@@ -30,11 +30,13 @@ else
 	PREFIX=""
 fi
 
-CAMERAS_CONFIG="{ head: {type: berxel, serial_number: P008GYX6115E3B039, exposure: 16000}}"
+CAMERAS_CONFIG="{ \
+head: {type: berxel, serial_number: P008GYX6115E3B039, exposure: 16000} \
+}"
 $PREFIX lerobot-teleoperate \
 	--robot.type=hex_arm_sim_follower \
 	--robot.headless=True \
 	--robot.cameras="$CAMERAS_CONFIG" \
 	--teleop.type=hex_dummy_leader \
 	--display_data=True \
-	--fps=250
+	--fps=200

@@ -21,5 +21,5 @@ lerobot-teleoperate \
     --teleop.host=$HELLO_HOST \
     --teleop.port=$HELLO_PORT \
     --display_data=True \
-    --fps=250
+    --fps=200
 ```

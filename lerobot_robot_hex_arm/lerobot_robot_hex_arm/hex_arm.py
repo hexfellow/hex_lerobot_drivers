@@ -208,7 +208,16 @@ class HexArmFollower(Robot):
         obs_dict = copy.deepcopy(self.__obs_queue[-1])
 
         for cam_key, cam in self.cameras.items():
-            obs_dict[cam_key] = cam.async_read()
+            sen_data = cam.async_read()
+            if isinstance(sen_data, tuple):
+                rgb, depth = sen_data
+                if rgb is not None:
+                    obs_dict[cam_key] = rgb
+                if depth is not None:
+                    obs_dict[f"{cam_key}_depth"] = depth
+            else:
+                if sen_data is not None:
+                    obs_dict[cam_key] = sen_data
 
         return obs_dict
 
@@ -352,14 +361,14 @@ class HexArmFollower(Robot):
                 cmd_pos[:self.__dofs["robot_arm"]] = cur_pos[:self.__dofs[
                     "robot_arm"]] + err * err_limit / max_err
 
-        cmd_pos[:self.
-                __dofs["robot_arm"]] = HexArmFollower.__arm_pos_limits(
-                    cmd_pos[:self.__dofs["robot_arm"]],
-                    self.__limits[self.__motor_idx["robot_arm"], 0, 0],
-                    self.__limits[self.__motor_idx["robot_arm"], 0, 1],
-                )
-        cmd_pos[-self.__dofs[
-            "robot_gripper"]:] = HexArmFollower.__gripper_pos_limits(
+        cmd_pos[:self.__dofs["robot_arm"]] = HexArmFollower.__arm_pos_limits(
+            cmd_pos[:self.__dofs["robot_arm"]],
+            self.__limits[self.__motor_idx["robot_arm"], 0, 0],
+            self.__limits[self.__motor_idx["robot_arm"], 0, 1],
+        )
+        cmd_pos[
+            -self.
+            __dofs["robot_gripper"]:] = HexArmFollower.__gripper_pos_limits(
                 cmd_pos[-self.__dofs["robot_gripper"]:],
                 self.__limits[self.__motor_idx["robot_gripper"], 0, 0],
                 self.__limits[self.__motor_idx["robot_gripper"], 0, 1],

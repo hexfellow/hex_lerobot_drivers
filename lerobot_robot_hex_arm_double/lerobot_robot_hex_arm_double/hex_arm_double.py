@@ -149,7 +149,16 @@ class HexArmDoubleFollower(Robot):
         }
 
         for cam_key, cam in self.cameras.items():
-            obs_dict[cam_key] = cam.async_read()
+            sen_data = cam.async_read()
+            if isinstance(sen_data, tuple):
+                rgb, depth = sen_data
+                if rgb is not None:
+                    obs_dict[cam_key] = rgb
+                if depth is not None:
+                    obs_dict[f"{cam_key}_depth"] = depth
+            else:
+                if sen_data is not None:
+                    obs_dict[cam_key] = sen_data
 
         return obs_dict
 

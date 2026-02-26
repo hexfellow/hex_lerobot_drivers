@@ -38,7 +38,10 @@ ARM_GRIPPER_TYPE="gp80"
 HELLO_HOST="172.18.10.251"
 LEFT_HELLO_PORT=8439
 RIGHT_HELLO_PORT=9439
-MIRROR_MODE=true
+MIRROR_MODE=false
+CAMERAS_CONFIG="{ \
+head: {type: berxel, serial_number: HK100RB5425M2B024, exposure: 10000} \
+}"
 $PREFIX lerobot-teleoperate \
 	--robot.type=hex_arm_double_follower \
 	--robot.left_config.host=$ARM_HOST \
@@ -49,6 +52,7 @@ $PREFIX lerobot-teleoperate \
 	--robot.right_config.port=$RIGHT_ARM_PORT \
 	--robot.right_config.arm_type=$ARM_TYPE \
 	--robot.right_config.gripper_type=$ARM_GRIPPER_TYPE \
+	--robot.cameras="$CAMERAS_CONFIG" \
 	--teleop.type=hex_hello_double_leader \
 	--teleop.use_mirror_mode=$MIRROR_MODE \
 	--teleop.left_config.host=$HELLO_HOST \
@@ -56,4 +60,4 @@ $PREFIX lerobot-teleoperate \
 	--teleop.right_config.host=$HELLO_HOST \
 	--teleop.right_config.port=$RIGHT_HELLO_PORT \
 	--display_data=True \
-	--fps=250
+	--fps=200

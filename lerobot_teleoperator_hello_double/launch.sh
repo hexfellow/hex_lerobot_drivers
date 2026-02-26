@@ -56,4 +56,4 @@ $PREFIX lerobot-teleoperate \
 	--teleop.right_config.host=$HELLO_HOST \
 	--teleop.right_config.port=$RIGHT_HELLO_PORT \
 	--display_data=True \
-	--fps=250
+	--fps=200

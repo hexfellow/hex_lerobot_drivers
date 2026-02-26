@@ -30,35 +30,24 @@ else
 	PREFIX=""
 fi
 
-# ARM_HOST="172.18.24.90"
-# ARM_PORT=9439
-# ARM_TYPE="firefly_y6"
-# ARM_GRIPPER_TYPE="gp80"
-# HELLO_HOST="172.18.24.90"
-# HELLO_PORT=8439
-
-# ARM_HOST="172.18.22.245"
-# ARM_PORT=8439
-# ARM_TYPE="archer_y6"
-# ARM_GRIPPER_TYPE="gp80"
-# HELLO_HOST="172.18.10.251"
-# HELLO_PORT=8439
-
-ARM_HOST="172.18.22.245"
+ARM_HOST="172.18.24.90"
 ARM_PORT=9439
-ARM_TYPE="archer_y6"
+ARM_TYPE="firefly_y6"
 ARM_GRIPPER_TYPE="gp80"
-HELLO_HOST="172.18.10.251"
-HELLO_PORT=9439
-
+HELLO_HOST="172.18.24.90"
+HELLO_PORT=8439
+CAMERAS_CONFIG="{ \
+head: {type: berxel, serial_number: P100RYB4C03M2B322, exposure: 10000} \
+}"
 $PREFIX lerobot-teleoperate \
 	--robot.type=hex_arm_follower \
 	--robot.host=$ARM_HOST \
 	--robot.port=$ARM_PORT \
 	--robot.arm_type=$ARM_TYPE \
 	--robot.gripper_type=$ARM_GRIPPER_TYPE \
+	--robot.cameras="$CAMERAS_CONFIG" \
 	--teleop.type=hex_hello_leader \
 	--teleop.host=$HELLO_HOST \
 	--teleop.port=$HELLO_PORT \
 	--display_data=True \
-	--fps=250
+	--fps=200

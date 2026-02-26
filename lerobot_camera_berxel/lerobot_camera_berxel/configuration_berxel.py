@@ -17,6 +17,8 @@ class BerxelCameraConfig(CameraConfig):
 
     serial_number: str = "0000000000000000"
     exposure: int = 16000
+    use_depth: bool = True
+
     fps: int = 30
     width: int = 640
     height: int = 400
