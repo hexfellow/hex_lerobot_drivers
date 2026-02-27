@@ -15,7 +15,11 @@ from typing import Any
 from hex_device import CommandType, HexDeviceApi, Arm, Hands
 from hex_robo_utils import (
     HexDynUtil as DynUtil,
+    HexFricUtil as FricUtil,
     HexRate,
+    arm_pos_limit,
+    gripper_pos_limit,
+    interp_joint,
 )
 
 from lerobot.cameras import make_cameras_from_configs
@@ -62,6 +66,14 @@ class HexArmFollower(Robot):
         model_name = f"{self.config.arm_type}_{self.config.gripper_type}"
         urdf_path = os.path.join(script_dir, "urdf", f"{model_name}.urdf")
         self.__dyn_util = DynUtil(urdf_path)
+
+        # firc_util
+        self.__fric_util = FricUtil(
+            np.ascontiguousarray(np.asarray(self.config.fric_fc)),
+            np.ascontiguousarray(np.asarray(self.config.fric_fv)),
+            np.ascontiguousarray(np.asarray(self.config.fric_fo)),
+            np.ascontiguousarray(np.asarray(self.config.fric_k)),
+        )
 
         # work loop
         self.__work_event = threading.Event()
@@ -160,7 +172,7 @@ class HexArmFollower(Robot):
         self.__dofs = {
             "robot_arm": arm_dofs,
             "robot_gripper": gripper_dofs,
-            "sum": arm_dofs + gripper_dofs,
+            "robot_sum": arm_dofs + gripper_dofs,
         }
         self.__motor_idx = {
             "robot_arm": np.arange(arm_dofs).tolist(),
@@ -170,8 +182,8 @@ class HexArmFollower(Robot):
         self.__gripper_ratio = self.__limits[
             self.__motor_idx["robot_gripper"], 0,
             1] - self.__limits[self.__motor_idx["robot_gripper"], 0, 0]
-        self.__mit_kp = self.__mit_kp[:self.__dofs["sum"]]
-        self.__mit_kd = self.__mit_kd[:self.__dofs["sum"]]
+        self.__mit_kp = self.__mit_kp[:self.__dofs["robot_sum"]]
+        self.__mit_kd = self.__mit_kd[:self.__dofs["robot_sum"]]
 
         for cam in self.cameras.values():
             cam.connect()
@@ -229,44 +241,48 @@ class HexArmFollower(Robot):
         self.__cmd_queue.append(action)
 
     def __work_loop(self) -> None:
-        rate = HexRate(self.__control_hz)
+        rate = HexRate(self.__control_hz * 2)
         while self.__work_event.is_set():
             rate.sleep()
 
-            self.__read_motor_status()
+            new_data = self.__read_motor_status()
+            if new_data:
+                obs = self.__inner_get_observation()
+                self.__obs_queue.append(obs)
 
-            obs = self.__inner_get_observation()
-            self.__obs_queue.append(obs)
+                if not self.__ready_event.is_set():
+                    init_cmd = {
+                        f"joint_{i+1}.pos": float(obs[f"joint_{i+1}.pos"])
+                        for i in range(self.__dofs["robot_arm"])
+                    } | {
+                        f"joint_{i+1}.vel": float(obs[f"joint_{i+1}.vel"])
+                        for i in range(self.__dofs["robot_arm"])
+                    } | {
+                        "gripper.value":
+                        float((obs["gripper.pos"] -
+                               self.__limits[self.__motor_idx["robot_gripper"],
+                                             0, 0]) / self.__gripper_ratio)
+                    }
+                    self.__cmd_queue.append(init_cmd)
+                    self.__ready_event.set()
 
-            if not self.__ready_event.is_set():
-                init_cmd = {
-                    f"joint_{i+1}.pos": float(obs[f"joint_{i+1}.pos"])
-                    for i in range(self.__dofs["robot_arm"])
-                } | {
-                    f"joint_{i+1}.vel": float(obs[f"joint_{i+1}.vel"])
-                    for i in range(self.__dofs["robot_arm"])
-                } | {
-                    "gripper.value":
-                    float((obs["gripper.pos"] -
-                           self.__limits[self.__motor_idx["robot_gripper"], 0,
-                                         0]) / self.__gripper_ratio)
-                }
-                self.__cmd_queue.append(init_cmd)
-                self.__ready_event.set()
+            self.__inner_send_action()
 
-            cmd = self.__cmd_queue[-1]
-            self.__inner_send_action(cmd)
+    def __read_motor_status(self) -> tuple[bool, bool]:
+        arm_state = self.__arm.get_simple_motor_status()
+        gripper_state = self.__gripper.get_simple_motor_status()
+        new_arm_ready = arm_state is not None
+        new_gripper_ready = gripper_state is not None
+        if new_arm_ready:
+            self.__arm_state_buffer = arm_state
+        if new_gripper_ready:
+            self.__gripper_state_buffer = gripper_state
+        arm_ready = self.__arm_state_buffer is not None
+        gripper_ready = self.__gripper_state_buffer is not None
 
-    def __read_motor_status(self) -> tuple[np.ndarray, np.ndarray]:
-        arm_ready, gripper_ready = False, False
-        while not arm_ready or not gripper_ready:
-            self.__arm_state_buffer = self.__arm.get_simple_motor_status()
-            self.__gripper_state_buffer = self.__gripper.get_simple_motor_status(
-            )
-            arm_ready = self.__arm_state_buffer is not None
-            gripper_ready = self.__gripper_state_buffer is not None
-            if not arm_ready or not gripper_ready:
-                time.sleep(0.1)
+        new_data = new_arm_ready or new_gripper_ready
+        ready = arm_ready and gripper_ready
+        return new_data and ready
 
     def __inner_get_observation(self) -> dict[str, Any]:
         if not self.is_connected:
@@ -291,127 +307,92 @@ class HexArmFollower(Robot):
 
         return obs_dict
 
-    def __inner_send_action(
-        self,
-        cmd: dict[str, Any],
-    ) -> None:
+    def __inner_send_action(self) -> None:
+        cmd = self.__cmd_queue[-1]
         cmd_pos, cmd_vel, cur_pos, cur_vel = self.__parse_action(
             cmd,
             self.config.pos_err_limit,
         )
 
-        arm_q = cur_pos[:self.__dofs["robot_arm"]]
-        arm_dq = cur_vel[:self.__dofs["robot_arm"]]
-        _, c_mat, g_vec, _, _ = self.__dyn_util.dynamic_params(arm_q, arm_dq)
-        comp_tor = np.zeros(self.__dofs["sum"])
-        comp_tor[:self.__dofs["robot_arm"]] = c_mat @ arm_dq + g_vec
+        comp_tor = np.zeros(self.__dofs["robot_sum"])
+        comp_tor[:self.__dofs["robot_arm"]] = self.__dyn_util.compensation(
+            cur_pos[:self.__dofs["robot_arm"]],
+            cur_vel[:self.__dofs["robot_arm"]],
+        )
+        comp_tor += self.__fric_util(cur_vel)
 
         # arm control
         arm_cmd = self.__arm.construct_mit_command(
-            cmd_pos[:self.__dofs["robot_arm"]],
-            cmd_vel[:self.__dofs["robot_arm"]] * 0.5,
+            cmd_pos[:self.__dofs["robot_arm"]] if not self.config.free_mode
+            else np.zeros(self.__dofs["robot_arm"]),
+            cmd_vel[:self.__dofs["robot_arm"]] if not self.config.free_mode
+            else np.zeros(self.__dofs["robot_arm"]),
             comp_tor[:self.__dofs["robot_arm"]],
-            self.__mit_kp[:self.__dofs["robot_arm"]],
-            self.__mit_kd[:self.__dofs["robot_arm"]],
+            self.__mit_kp[:self.__dofs["robot_arm"]] if
+            not self.config.free_mode else np.zeros(self.__dofs["robot_arm"]),
+            self.__mit_kd[:self.__dofs["robot_arm"]] if
+            not self.config.free_mode else np.zeros(self.__dofs["robot_arm"]),
         )
         self.__arm.motor_command(CommandType.MIT, arm_cmd)
 
         # gripper control
         gripper_cmd = self.__gripper.construct_mit_command(
-            cmd_pos[-self.__dofs["robot_gripper"]:],
-            cmd_vel[-self.__dofs["robot_gripper"]:] * 0.5,
+            cmd_pos[-self.__dofs["robot_gripper"]:]
+            if not self.config.free_mode else np.zeros(
+                self.__dofs["robot_gripper"]),
+            cmd_vel[-self.__dofs["robot_gripper"]:]
+            if not self.config.free_mode else np.zeros(
+                self.__dofs["robot_gripper"]),
             comp_tor[-self.__dofs["robot_gripper"]:],
-            self.__mit_kp[-self.__dofs["robot_gripper"]:],
-            self.__mit_kd[-self.__dofs["robot_gripper"]:],
+            self.__mit_kp[-self.__dofs["robot_gripper"]:]
+            if not self.config.free_mode else np.zeros(
+                self.__dofs["robot_gripper"]),
+            self.__mit_kd[-self.__dofs["robot_gripper"]:]
+            if not self.config.free_mode else np.zeros(
+                self.__dofs["robot_gripper"]),
         )
         self.__gripper.motor_command(CommandType.MIT, gripper_cmd)
 
     def __parse_action(
         self, cmd: dict[str, Any], err_limit: float | None
     ) -> [np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-        cur_pos = np.concatenate(
-            [
-                self.__arm_state_buffer['pos'],
-                self.__gripper_state_buffer['pos'],
-            ],
-            axis=0,
-        )
-        cur_vel = np.concatenate(
-            [
-                self.__arm_state_buffer['vel'],
-                self.__gripper_state_buffer['vel'],
-            ],
-            axis=0,
-        )
+        cur_state = {
+            key:
+            np.concatenate(
+                [
+                    self.__arm_state_buffer[key],
+                    self.__gripper_state_buffer[key],
+                ],
+                axis=0,
+            )
+            for key in ['pos', 'vel']
+        }
 
-        cmd_pos = np.zeros(self.__dofs["sum"])
-        cmd_vel = np.zeros(self.__dofs["sum"])
+        cmd_pos = np.zeros(self.__dofs["robot_sum"])
+        cmd_vel = np.zeros(self.__dofs["robot_sum"])
         for i in range(self.__dofs["robot_arm"]):
             cmd_pos[i] = cmd[f"joint_{i+1}.pos"]
             cmd_vel[i] = cmd[f"joint_{i+1}.vel"]
         cmd_pos[-self.__dofs["robot_gripper"]:] = cmd[
             "gripper.value"] * self.__gripper_ratio + self.__limits[
                 self.__motor_idx["robot_gripper"], 0, 0]
-        cmd_vel[-self.__dofs["robot_gripper"]:] = 0.0
 
         if err_limit is not None:
-            err = (cmd_pos - cur_pos)[:self.__dofs["robot_arm"]]
-            max_err = np.fabs(err).max()
-            if max_err > err_limit:
-                cmd_pos[:self.__dofs["robot_arm"]] = cur_pos[:self.__dofs[
-                    "robot_arm"]] + err * err_limit / max_err
+            cmd_pos[:self.__dofs["robot_arm"]] = interp_joint(
+                cur_state['pos'][:self.__dofs["robot_arm"]],
+                cmd_pos[:self.__dofs["robot_arm"]],
+                err_limit,
+            )[0]
 
-        cmd_pos[:self.__dofs["robot_arm"]] = HexArmFollower.__arm_pos_limits(
+        cmd_pos[:self.__dofs["robot_arm"]] = arm_pos_limit(
             cmd_pos[:self.__dofs["robot_arm"]],
             self.__limits[self.__motor_idx["robot_arm"], 0, 0],
             self.__limits[self.__motor_idx["robot_arm"], 0, 1],
         )
-        cmd_pos[
-            -self.
-            __dofs["robot_gripper"]:] = HexArmFollower.__gripper_pos_limits(
-                cmd_pos[-self.__dofs["robot_gripper"]:],
-                self.__limits[self.__motor_idx["robot_gripper"], 0, 0],
-                self.__limits[self.__motor_idx["robot_gripper"], 0, 1],
-            )
+        cmd_pos[-self.__dofs["robot_gripper"]:] = gripper_pos_limit(
+            cmd_pos[-self.__dofs["robot_gripper"]:],
+            self.__limits[self.__motor_idx["robot_gripper"], 0, 0],
+            self.__limits[self.__motor_idx["robot_gripper"], 0, 1],
+        )
 
-        return cmd_pos, cmd_vel, cur_pos, cur_vel
-
-    @staticmethod
-    def __rads_normalize(rads: np.ndarray) -> np.ndarray:
-        return (rads + np.pi) % (2 * np.pi) - np.pi
-
-    @staticmethod
-    def __arm_pos_limits(
-        arm_pos: np.ndarray,
-        lower_bound: np.ndarray,
-        upper_bound: np.ndarray,
-    ) -> np.ndarray:
-        normed_rads = HexArmFollower.__rads_normalize(arm_pos)
-        outside = (normed_rads < lower_bound) | (normed_rads > upper_bound)
-        if not np.any(outside):
-            return normed_rads
-
-        lower_dist = np.fabs(
-            HexArmFollower.__rads_normalize(
-                (normed_rads - lower_bound)[outside]))
-        upper_dist = np.fabs(
-            HexArmFollower.__rads_normalize(
-                (normed_rads - upper_bound)[outside]))
-        choose_lower = lower_dist < upper_dist
-        choose_upper = ~choose_lower
-
-        outside_full = np.flatnonzero(outside)
-        outside_lower = outside_full[choose_lower]
-        outside_upper = outside_full[choose_upper]
-        normed_rads[outside_lower] = lower_bound[outside_lower]
-        normed_rads[outside_upper] = upper_bound[outside_upper]
-
-        return normed_rads
-
-    @staticmethod
-    def __gripper_pos_limits(
-        gripper_pos: np.ndarray,
-        lower_bound: np.ndarray,
-        upper_bound: np.ndarray,
-    ) -> np.ndarray:
-        return np.clip(gripper_pos, lower_bound, upper_bound)
+        return cmd_pos, cmd_vel, cur_state['pos'], cur_state['vel']

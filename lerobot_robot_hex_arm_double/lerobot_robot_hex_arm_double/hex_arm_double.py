@@ -37,6 +37,11 @@ class HexArmDoubleFollower(Robot):
             pos_err_limit=config.left_config.pos_err_limit,
             mit_kp=config.left_config.mit_kp,
             mit_kd=config.left_config.mit_kd,
+            fric_fc=config.left_config.fric_fc,
+            fric_fv=config.left_config.fric_fv,
+            fric_fo=config.left_config.fric_fo,
+            fric_k=config.left_config.fric_k,
+            free_mode=config.left_config.free_mode,
         )
         right_config = HexArmFollowerConfig(
             id=f"{config.id}_right" if config.id else None,
@@ -48,6 +53,11 @@ class HexArmDoubleFollower(Robot):
             pos_err_limit=config.right_config.pos_err_limit,
             mit_kp=config.right_config.mit_kp,
             mit_kd=config.right_config.mit_kd,
+            fric_fc=config.right_config.fric_fc,
+            fric_fv=config.right_config.fric_fv,
+            fric_fo=config.right_config.fric_fo,
+            fric_k=config.right_config.fric_k,
+            free_mode=config.right_config.free_mode,
         )
 
         # device

@@ -91,9 +91,9 @@ class HexDummyLeader(Teleoperator):
 
         action = {
             "joint_1.pos": 0.0,
-            "joint_2.pos": -0.0205679922,
-            "joint_3.pos": 2.57081467,
-            "joint_4.pos": -0.978840246,
+            "joint_2.pos": -1.5,
+            "joint_3.pos": 3.0,
+            "joint_4.pos": 0.07,
             "joint_5.pos": 0.0,
             "joint_6.pos": 0.0,
             "joint_1.vel": 0.0,
@@ -104,6 +104,7 @@ class HexDummyLeader(Teleoperator):
             "joint_6.vel": 0.0,
             "gripper.value": 0.0,
         }
+
         return action
 
     def send_feedback(self, feedback: dict[str, float]) -> None:

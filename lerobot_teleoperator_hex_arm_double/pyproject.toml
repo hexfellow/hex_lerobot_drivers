@@ -3,7 +3,7 @@ requires = ["setuptools >= 61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "lerobot_teleoperator_dummy"
+name = "lerobot_teleoperator_hex_arm_double"
 version = "0.1.0"
 description = "HEXFELLOW LeRobot Drivers"
 readme = "README.md"
@@ -15,7 +15,7 @@ maintainers = [
 ]
 keywords = ["hex_lerobot_drivers"]
 requires-python = ">=3.10"
-dependencies = ["lerobot>=0.4"]
+dependencies = ["lerobot>=0.4", "lerobot_teleoperator_hex_arm>=0.0.1"]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",

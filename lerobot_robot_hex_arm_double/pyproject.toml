@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lerobot_robot_hex_arm_double"
-version = "0.0.1"
+version = "0.1.0"
 description = "HEXFELLOW LeRobot Drivers"
 readme = "README.md"
 license = "Apache-2.0"

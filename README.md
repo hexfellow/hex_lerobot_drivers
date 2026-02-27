@@ -36,16 +36,19 @@ lerobot-teleoperate \
 
 ## Devices
 
-| Device             | Status |  Type  | Description                       |             pip package             |
-| ------------------ | :----: | :----: | --------------------------------- | :---------------------------------: |
-| **hex_arm**        |   🟢    | Robot  | The robot for Hex Arm             |       `lerobot_robot_hex_arm`       |
-| **hex_arm_sim**    |   🟢    | Robot  | The simulated robot for Hex Arm   |     `lerobot_robot_hex_arm_sim`     |
-| **hex_arm_double** |   🟢    | Robot  | The robot for double Hex Arm      |   `lerobot_robot_hex_arm_double`    |
-| **dummy**          |   🟢    | Teleop | The simulated teleoperator        |    `lerobot_teleoperator_dummy`     |
-| **hello**          |   🟢    | Teleop | The teleoperator for Hello        |    `lerobot_teleoperator_hello`     |
-| **hello_double**   |   🟢    | Teleop | The teleoperator for double Hello | `lerobot_teleoperator_hello_double` |
-| **dummy**          |   🟢    | Camera | The simulated camera              |       `lerobot_camera_dummy`        |
-| **berxel**         |   🟢    | Camera | The camera for Berxel devices     |       `lerobot_camera_berxel`       |
+| Device             | Status |  Type  | Description                         |              pip package              |
+| ------------------ | :----: | :----: | ----------------------------------- | :-----------------------------------: |
+| **hex_arm**        |   🟢    | Robot  | The robot for Hex Arm               |        `lerobot_robot_hex_arm`        |
+| **hex_arm_sim**    |   🟢    | Robot  | The simulated robot for Hex Arm     |      `lerobot_robot_hex_arm_sim`      |
+| **hex_arm_double** |   🟢    | Robot  | The robot for double Hex Arm        |    `lerobot_robot_hex_arm_double`     |
+| **dummy**          |   🟢    | Teleop | The simulated teleoperator          |     `lerobot_teleoperator_dummy`      |
+| **hello**          |   🟢    | Teleop | The teleoperator for Hello          |     `lerobot_teleoperator_hello`      |
+| **hello_double**   |   🟢    | Teleop | The teleoperator for double Hello   |  `lerobot_teleoperator_hello_double`  |
+| **hex_arm**        |   🟢    | Teleop | The teleoperator for Hex Arm        |    `lerobot_teleoperator_hex_arm`     |
+| **hex_arm_double** |   🟢    | Teleop | The teleoperator for double Hex Arm | `lerobot_teleoperator_hex_arm_double` |
+| **dummy**          |   🟢    | Camera | The simulated camera                |        `lerobot_camera_dummy`         |
+| **berxel**         |   🟢    | Camera | The camera for Berxel devices       |        `lerobot_camera_berxel`        |
+
 
 ## License
 

@@ -8,25 +8,21 @@
 
 from dataclasses import dataclass, field
 
-from lerobot.robots import RobotConfig
-from lerobot.cameras import CameraConfig
+from lerobot.teleoperators import TeleoperatorConfig
 
 
 @dataclass
-class HexArmFollowerConfigBase:
+class HexArmLeaderConfigBase:
+    """Base configuration for Hex Arm leader teleoperator."""
+
     host: str = "127.0.0.1"
     port: int = 8439
     control_hz: int = 500
 
+    # Hex Arm specific parameters
     arm_type: str = "firefly_y6"
     gripper_type: str = "gp80"
 
-    pos_err_limit: float = 0.05
-    mit_kp: list[float] = field(
-        default_factory=lambda:
-        [300.0, 300.0, 350.0, 150.0, 100.0, 100.0, 10.0])
-    mit_kd: list[float] = field(
-        default_factory=lambda: [5.0, 5.0, 5.0, 5.0, 2.0, 2.0, 0.5])
     fric_fc: list[float] = field(
         default_factory=lambda: [0.1, 0.1, 0.3, 0.3, 0.0, 0.0, 0.05])
     fric_fv: list[float] = field(
@@ -36,10 +32,12 @@ class HexArmFollowerConfigBase:
     fric_k: list[float] = field(
         default_factory=lambda:
         [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 400.0])
-    free_mode: bool = False
+    read_mode: bool = False
 
 
-@RobotConfig.register_subclass("hex_arm_follower")
+@TeleoperatorConfig.register_subclass("hex_arm_leader")
 @dataclass
-class HexArmFollowerConfig(RobotConfig, HexArmFollowerConfigBase):
-    cameras: dict[str, CameraConfig] = field(default_factory=dict)
+class HexArmLeaderConfig(TeleoperatorConfig, HexArmLeaderConfigBase):
+    """Configuration for Hex Arm leader teleoperator."""
+
+    pass
