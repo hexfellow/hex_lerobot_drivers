@@ -6,11 +6,7 @@
 # Date  : 2026-02-15
 ################################################################
 
-import time
-import numpy as np
 from typing import Any
-
-from hex_device import HexDeviceApi, Arm, Hands
 
 from lerobot.teleoperators import Teleoperator
 from lerobot.utils.errors import DeviceAlreadyConnectedError, DeviceNotConnectedError
@@ -32,16 +28,6 @@ class HexDummyLeader(Teleoperator):
         self.__control_hz = config.control_hz
 
         # variables
-        # hex_arm variables
-        self.__hex_api: HexDeviceApi | None = None
-        self.__arm: Arm | None = None
-        self.__gripper: Hands | None = None
-
-        # buffer
-        self.__arm_state_buffer: dict | None = None
-        self.__gripper_state_buffer: dict | None = None
-
-        # state
         self.__connected_flag = False
 
     @property

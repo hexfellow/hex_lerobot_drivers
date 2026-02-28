@@ -10,7 +10,7 @@ import time
 import numpy as np
 from typing import Any
 
-from hex_device import HexDeviceApi, Arm, Hands
+from hex_device import HexDeviceApi, Arm, Hands, set_log_level
 
 from lerobot.teleoperators import Teleoperator
 from lerobot.utils.errors import DeviceAlreadyConnectedError, DeviceNotConnectedError
@@ -69,6 +69,7 @@ class HexHelloLeader(Teleoperator):
             raise DeviceAlreadyConnectedError(f"{self} is already connected.")
 
         # open device
+        set_log_level("WARNING")
         self.__hex_api = HexDeviceApi(
             ws_url=self.__device_url,
             control_hz=self.__control_hz,
